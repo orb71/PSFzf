@@ -107,17 +107,17 @@ function FixCompletionResult($str, [switch]$AlwaysQuote) {
 	if ([string]::IsNullOrEmpty($str)) {
 		return ""
 	}
-	
+
 	$str = $str.Replace("`r`n", "")
-	
+
 	# check if already quoted
 	$isAlreadyQuoted = ($str.StartsWith("'") -and $str.EndsWith("'")) -or `
-		($str.StartsWith("""") -and $str.EndsWith(""""))
-	
+	($str.StartsWith("""") -and $str.EndsWith(""""))
+
 	if ($isAlreadyQuoted) {
 		return $str
 	}
-	
+
 	# Quote if it contains spaces/tabs, or if AlwaysQuote is specified
 	if ($AlwaysQuote -or $str.Contains(" ") -or $str.Contains("`t")) {
 		return """{0}""" -f $str
@@ -317,9 +317,8 @@ function Invoke-Fzf {
 		[int]$MinHeight,
 		[ValidateSet('default', 'reverse', 'reverse-list')]
 		[string]$Layout = $null,
-		[switch]$Border,
 		[ValidateSet('rounded', 'sharp', 'bold', 'block', 'double', 'horizontal', 'vertical', 'top', 'bottom', 'left', 'right', 'none')]
-		[string]$BorderStyle,
+		$Border,
 		[string]$BorderLabel,
 		[ValidateSet('default', 'inline', 'hidden')]
 		[string]$Info = $null,
@@ -387,9 +386,8 @@ function Invoke-Fzf {
 		if ($PSBoundParameters.ContainsKey('Height') -and ![string]::IsNullOrWhiteSpace($Height)) { $arguments += "--height=$height " }
 		if ($PSBoundParameters.ContainsKey('MinHeight') -and $MinHeight -ge 0) { $arguments += "--min-height=$MinHeight " }
 		if ($PSBoundParameters.ContainsKey('Layout') -and ![string]::IsNullOrWhiteSpace($Layout)) { $arguments += "--layout=$Layout " }
-		if ($PSBoundParameters.ContainsKey('Border') -and $Border) { $arguments += '--border ' }
+		if ($PSBoundParameters.ContainsKey('Border')) { $arguments += if ($Border -is [string]) { "--border=$Border " } else { '--border ' } }
 		if ($PSBoundParameters.ContainsKey('BorderLabel') -and ![string]::IsNullOrWhiteSpace($BorderLabel)) { $arguments += "--border-label=""$BorderLabel"" " }
-		if ($PSBoundParameters.ContainsKey('BorderStyle') -and ![string]::IsNullOrWhiteSpace($BorderStyle)) { $arguments += "--border=$BorderStyle " }
 		if ($PSBoundParameters.ContainsKey('Info') -and ![string]::IsNullOrWhiteSpace($Info)) { $arguments += "--info=$Info " }
 		if ($PSBoundParameters.ContainsKey('Prompt') -and ![string]::IsNullOrWhiteSpace($Prompt)) { $arguments += "--prompt=""$Prompt"" " }
 		if ($PSBoundParameters.ContainsKey('Pointer') -and ![string]::IsNullOrWhiteSpace($Pointer)) { $arguments += "--pointer=""$Pointer"" " }
@@ -422,9 +420,6 @@ function Invoke-Fzf {
 			$arguments += "--height=40% "
 		}
 
-		if ($Border -eq $true -and -not [string]::IsNullOrWhiteSpace($BorderStyle)) {
-			throw '-Border and -BorderStyle are mutally exclusive'
-		}
 		if ($script:UseFd -and $script:AnsiCompatible -and -not $arguments.Contains('--ansi')) {
 			$arguments += "--ansi "
 		}
