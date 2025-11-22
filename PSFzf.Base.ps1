@@ -317,7 +317,7 @@ function Invoke-Fzf {
 		[int]$MinHeight,
 		[ValidateSet('default', 'reverse', 'reverse-list')]
 		[string]$Layout = $null,
-		[ValidateSet('rounded', 'sharp', 'bold', 'block', 'double', 'horizontal', 'vertical', 'top', 'bottom', 'left', 'right', 'none')]
+		[ValidateSet('rounded', 'sharp', 'bold', 'block', 'thinblock', 'double', 'horizontal', 'vertical', 'top', 'bottom', 'left', 'right', 'line', 'none')]
 		$Border,
 		[string]$BorderLabel,
 		[ValidateSet('default', 'inline', 'hidden')]
@@ -360,6 +360,10 @@ function Invoke-Fzf {
 	)
 
 	Begin {
+		#Write-Host "Border type: $($Border.GetType().FullName)"
+		#Write-Host "Border value: $Border"
+		#Write-Host "Border is null: $($null -eq $Border)"
+
 		# process parameters:
 		$arguments = ''
 		$WriteLine = $true
